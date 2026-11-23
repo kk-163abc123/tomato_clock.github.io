@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>番茄专注 · Pomodoro</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-tomato" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="30" height="30">
+            <path d="M16 7c-1-3 1-5 4-5-1 2-2 4-4 5z" fill="#3a9d5d"/>
+            <path d="M16 7c1-3-1-5-4-5 1 2 2 4 4 5z" fill="#4caf6b"/>
+            <path d="M16 8c-6 0-11 4.5-11 11 0 6.5 5 11 11 11s11-4.5 11-11c0-6.5-5-11-11-11z" fill="#e8503a"/>
+            <path d="M16 8c-2 0-3 0-4 1 1-1 3-2 5-2 6 0 10 5 10 11 0 4-2 7-4 9 3-2 5-5 5-9 0-6-5-10-11-10z" fill="#cf402e"/>
+          </svg>
+        </span>
+        <div>
+          <h1>番茄专注</h1>
+          <p>一次只做一件事，把时间交给番茄</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="points-chip" id="shopBtn" title="打开番茄商店">
+          <span aria-hidden="true">🍅</span>
+          <span class="points-num" id="pointsNum">0</span>
+          <span class="points-label">积分</span>
+        </button>
+        <button class="icon-btn" id="soundToggle" title="切换提示音" aria-label="切换提示音">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 5 6 9H2v6h4l5 4z"/><path class="sound-wave" d="M15.5 8.5a5 5 0 0 1 0 7"/><path class="sound-wave" d="M18.5 5.5a9 9 0 0 1 0 13"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <!-- 计时器区域 -->
+      <section class="timer-panel">
+        <div class="mode-tabs" role="tablist">
+          <button class="mode-tab active" data-mode="focus" role="tab">专注</button>
+          <button class="mode-tab" data-mode="short" role="tab">短休息</button>
+          <button class="mode-tab" data-mode="long" role="tab">长休息</button>
+        </div>
+
+        <div class="tomato-stage">
+          <svg class="progress-ring" viewBox="0 0 360 360" aria-hidden="true">
+            <circle class="ring-track" cx="180" cy="180" r="166"></circle>
+            <circle class="ring-progress" id="ringProgress" cx="180" cy="180" r="166"></circle>
+          </svg>
+
+          <div class="tomato" id="tomato">
+            <div class="tomato-shine"></div>
+            <div class="stem" aria-hidden="true">
+              <svg viewBox="0 0 120 60" width="120" height="60">
+                <path d="M60 40 C58 22 54 12 46 6 C60 8 66 18 64 34 Z" fill="#3d9b5b"/>
+                <path d="M60 40 C63 22 70 12 80 8 C68 14 64 24 65 36 Z" fill="#4caf6b"/>
+                <path d="M60 42 L61 18" stroke="#2f7d47" stroke-width="5" stroke-linecap="round" fill="none"/>
+                <path d="M30 46 C36 34 48 30 60 32 C48 36 42 42 40 50 Z" fill="#57b978"/>
+                <path d="M90 46 C84 34 72 30 60 32 C72 36 78 42 80 50 Z" fill="#3d9b5b"/>
+              </svg>
+            </div>
+            <div class="tomato-face">
+              <div class="time-display" id="timeDisplay">25:00</div>
+              <div class="mode-label" id="modeLabel">专注时间</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="btn btn-ghost" id="resetBtn" title="重置">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+            重置
+          </button>
+          <button class="btn btn-primary" id="startBtn">
+            <span class="btn-icon" id="startIcon">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            </span>
+            <span id="startText">开始专注</span>
+          </button>
+          <button class="btn btn-ghost" id="skipBtn" title="跳过当前阶段（本次不计积分）">
+            跳过
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 4 10 8-10 8z"/><path d="M19 5v14"/></svg>
+          </button>
+        </div>
+
+        <div class="session-row">
+          <span>今日已完成</span>
+          <div class="session-dots" id="sessionDots"></div>
+          <strong id="sessionCount">0</strong>
+          <span>个番茄</span>
+        </div>
+        <p class="earn-hint">完整完成（不跳过、不重置）可得 <strong id="earnPerTomato">25</strong> 积分 · <button class="link-btn" id="shopLink">去商店</button></p>
+      </section>
+
+      <!-- 任务与设置 -->
+      <aside class="side-panel">
+        <section class="card tasks-card">
+          <div class="card-head">
+            <h2>今日任务</h2>
+            <span class="badge" id="taskProgress">0/0</span>
+          </div>
+          <form class="task-form" id="taskForm">
+            <input type="text" id="taskInput" placeholder="添加一个专注任务…" maxlength="60" autocomplete="off">
+            <button type="submit" title="添加任务">+</button>
+          </form>
+          <ul class="task-list" id="taskList"></ul>
+          <p class="empty-hint" id="emptyHint">还没有任务，先写下一件想专注完成的事吧。</p>
+        </section>
+
+        <section class="card settings-card">
+          <div class="card-head"><h2>时长设置</h2></div>
+          <div class="setting-item">
+            <label for="focusMin">专注时长 <span>分钟</span></label>
+            <input type="number" id="focusMin" min="1" max="120" value="25">
+          </div>
+          <div class="setting-item">
+            <label for="shortMin">短休息 <span>分钟</span></label>
+            <input type="number" id="shortMin" min="1" max="60" value="5">
+          </div>
+          <div class="setting-item">
+            <label for="longMin">长休息 <span>分钟</span></label>
+            <input type="number" id="longMin" min="1" max="60" value="15">
+          </div>
+          <div class="setting-item">
+            <label for="longEvery">每几个番茄长休息</label>
+            <input type="number" id="longEvery" min="2" max="12" value="4">
+          </div>
+          <p class="settings-note">修改后会在下一阶段生效</p>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer">专注当下 · 一次只做一件事 · 完成后记得起身活动一下</footer>
+  </div>
+
+  <!-- 完成提示弹窗 -->
+  <div class="modal-backdrop" id="modal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <div class="modal-emoji" id="modalEmoji">🍅</div>
+      <h2 id="modalTitle">专注完成！</h2>
+      <p id="modalDesc">做得不错，休息一下吧。</p>
+      <div class="modal-points" id="modalPoints" hidden></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="modalClose">稍后</button>
+        <button class="btn btn-primary" id="modalNext">开始休息</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 番茄商店 -->
+  <div class="modal-backdrop shop-backdrop" id="shopModal" hidden>
+    <div class="shop-box" role="dialog" aria-modal="true" aria-label="番茄商店">
+      <div class="shop-head">
+        <div class="shop-heading">
+          <h2>番茄商店</h2>
+          <p>完整完成一个番茄，获得等同时长（分钟）的积分</p>
+        </div>
+        <div class="shop-balance">我的积分 <strong id="shopPoints">0</strong></div>
+        <button class="shop-close" id="shopClose" aria-label="关闭商店">×</button>
+      </div>
+      <div class="shop-tabs">
+        <button class="shop-tab active" data-tab="skin">番茄样式 <span>10</span></button>
+        <button class="shop-tab" data-tab="bg">背景主题 <span>10</span></button>
+      </div>
+      <div class="shop-grid" id="shopGrid"></div>
+      <div class="shop-foot">购买后自动启用，随时可在商店切换已拥有的装扮</div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
